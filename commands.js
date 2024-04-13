@@ -24,7 +24,21 @@ const TEST_COMMAND = {
   type: 1,
 };
 
+const SEND_COMMAND = {
+  name: 'send',
+  description: 'Envoyer un message',
+  options: [
+    {
+      type: 3,
+      name: 'message',
+      description: 'Choississez votre message',
+      required: true,
+    }
+  ],
+  type: 1
+}
 
-const ALL_COMMANDS = [TEST_COMMAND];
+
+const ALL_COMMANDS = [TEST_COMMAND, SEND_COMMAND];
 
 InstallGlobalCommands(process.env.APP_ID, ALL_COMMANDS);
