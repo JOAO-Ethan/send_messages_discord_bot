@@ -49,13 +49,17 @@ app.post('/interactions', async function (req, res) {
       });
     }
     if(name === 'send') {
-        const userId = req.body.member.user.sendMessage("feur");
-        return res.send({
-          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-          data: {
-            content: 'message envoyé',
-          }
+      try {
+        const userId = req.body.member.user.id;
+        const endpoint = 'users/'+userId;
+
+        user = await DiscordRequest(endpoint, {
+          method: 'GET',
         });
+        user.sendMessage("a");
+      } catch(err){
+        console.log(err);
+      }
     }
   }
 });
