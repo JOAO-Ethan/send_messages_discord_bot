@@ -49,7 +49,7 @@ app.post("/interactions", async function (req, res) {
       try {
         const options = req.body.data.options;
 
-        fetchUser(option[0]).then(async userId => {
+        fetchUser(options[0]).then(async userId => {
           getDMChannel(userId).then(async channel => {
             console.log(channel);
             await sendMessage(channel.id, options[1].value);
