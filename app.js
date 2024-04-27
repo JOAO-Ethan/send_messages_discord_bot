@@ -49,8 +49,8 @@ app.post("/interactions", async function (req, res) {
       try {
         const options = req.body.data.options;
 
-        fetchUser(options[0]).then(async userId => {
-          getDMChannel(userId).then(async channel => {
+        fetchUser(options[0].value).then(async user => {
+          getDMChannel(user.id).then(async channel => {
             console.log(channel);
             await sendMessage(channel.id, options[1].value);
             console.log(res);
@@ -58,7 +58,7 @@ app.post("/interactions", async function (req, res) {
               type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
               data: {
                 // Fetches a random emoji to send from a helper function
-                content: "Message envoyé à " + req.body.member.user.username,
+                content: "Message envoyé à " + user.username+' \n Message : ```\n'+options[1].value+'```',
               },
             });
           });
