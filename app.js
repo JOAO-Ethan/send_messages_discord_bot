@@ -47,19 +47,23 @@ app.post("/interactions", async function (req, res) {
     }
     if (name === "send") {
       try {
-        const userId = req.body.member.user.id;
-        getDMChannel(userId).then(async channel => {
-          console.log(channel);
-          await sendMessage(channel.id, "Hello World !");
-          console.log(res);
-          return res.send({
-            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-            data: {
-              // Fetches a random emoji to send from a helper function
-              content: "hello world ",
-            },
+        const options = req.body.data.options;
+
+        fetchUser(option[0]).then(async userId => {
+          getDMChannel(userId).then(async channel => {
+            console.log(channel);
+            await sendMessage(channel.id, options[1].value);
+            console.log(res);
+            return res.send({
+              type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+              data: {
+                // Fetches a random emoji to send from a helper function
+                content: "Message envoyé à " + req.body.member.user.username,
+              },
+            });
           });
         });
+
       } catch (err) {
         console.log(err);
       }
@@ -76,11 +80,11 @@ async function fetchUser(userId) {
   return await response.json();
 }
 
-async function getDMChannel(userId){
+async function getDMChannel(userId) {
   const endpoint = "users/@me/channels";
   let response = await DiscordRequest(endpoint, {
     method: "POST",
-    json: {
+    body: {
       recipient_id: userId
     }
   });
@@ -91,7 +95,7 @@ async function sendMessage(channelId, message) {
   let endpoint = '/channels/' + channelId + '/messages';
   await DiscordRequest(endpoint, {
     method: "POST",
-    json: {
+    body: {
       content: message
     }
   });

@@ -11,12 +11,19 @@ const SEND_COMMAND = {
   name: 'send',
   description: 'Envoyer un message',
   options: [
+
+    {
+      type: 3,
+      name: "id de l'utilisateur",
+      description: "Veuillez indiquer l'id de l'utilisateur",
+      required: true
+    },
     {
       type: 3,
       name: 'message',
       description: 'Choississez votre message',
       required: true,
-    }
+    },
   ],
   type: 1
 }
