@@ -1,10 +1,7 @@
-import 'dotenv/config';
-import express from 'express';
-import {
-  InteractionType,
-  InteractionResponseType
-} from 'discord-interactions';
-import { DiscordRequest, VerifyDiscordRequest } from './utils.js';
+import "dotenv/config";
+import express, { json } from "express";
+import { InteractionType, InteractionResponseType } from "discord-interactions";
+import { DiscordRequest, VerifyDiscordRequest } from "./utils.js";
 
 // Create an express app
 const app = express();
@@ -19,7 +16,7 @@ const activeGames = {};
 /**
  * Interactions endpoint URL where Discord will send HTTP requests
  */
-app.post('/interactions', async function (req, res) {
+app.post("/interactions", async function (req, res) {
   // Interaction type and data
   const { type, id, data } = req.body;
 
@@ -38,32 +35,68 @@ app.post('/interactions', async function (req, res) {
     const { name } = data;
 
     // "test" command
-    if (name === 'test') {
+    if (name === "test") {
       // Send a message into the channel where command was triggered from
       return res.send({
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
           // Fetches a random emoji to send from a helper function
-          content: 'hello world ',
+          content: "hello world ",
         },
       });
     }
-    if(name === 'send') {
+    if (name === "send") {
       try {
         const userId = req.body.member.user.id;
-        const endpoint = 'users/'+userId;
-
-        user = await DiscordRequest(endpoint, {
-          method: 'GET',
+        getDMChannel(userId).then(async channel => {
+          console.log(channel);
+          await sendMessage(channel.id, "Hello World !");
+          console.log(res);
+          return res.send({
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+            data: {
+              // Fetches a random emoji to send from a helper function
+              content: "hello world ",
+            },
+          });
         });
-        user.sendMessage("a");
-      } catch(err){
+      } catch (err) {
         console.log(err);
       }
     }
   }
 });
 
+async function fetchUser(userId) {
+  const endpoint = "users/" + userId;
+
+  let response = await DiscordRequest(endpoint, {
+    method: "GET",
+  });
+  return await response.json();
+}
+
+async function getDMChannel(userId){
+  const endpoint = "users/@me/channels";
+  let response = await DiscordRequest(endpoint, {
+    method: "POST",
+    json: {
+      recipient_id: userId
+    }
+  });
+  return await response.json
+}
+
+async function sendMessage(channelId, message) {
+  let endpoint = '/channels/' + channelId + '/messages';
+  await DiscordRequest(endpoint, {
+    method: "POST",
+    json: {
+      content: message
+    }
+  });
+}
+
 app.listen(PORT, () => {
-  console.log('Listening on port', PORT);
+  console.log("Listening on port", PORT);
 });
